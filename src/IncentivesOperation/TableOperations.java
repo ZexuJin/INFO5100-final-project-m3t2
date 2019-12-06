@@ -44,7 +44,7 @@ public class TableOperations {
         java.sql.Date sqlEndDate = new java.sql.Date(utilDate2.getTime());
         return sqlEndDate;
     }
-    
+
     //Filter/Offer to String
     public String FilterToString(Incentive I) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
@@ -56,7 +56,7 @@ public class TableOperations {
         String Offer = mapper.writeValueAsString(I.getOffer()); //convert offer to string
         return Offer;
     }
-    
+
 
 
     //Create a new line.
@@ -85,9 +85,9 @@ public class TableOperations {
     public void Create(Incentive I) throws SQLException, JsonProcessingException {
         CreateConnection(); //get connection;
         String DealerID = I.getDealer().getDealerID(); //get DealerID
-        
+
         // convert format
-        String filterList = FilterToString(I); 
+        String filterList = FilterToString(I);
         String offer = OfferToString(I);
         Date startDate = JavaStartDateToSqlDate(I);
         Date endDate = JavaEndDateToSqlDate(I);
@@ -118,7 +118,7 @@ public class TableOperations {
     public void EditItem(Incentive I) throws SQLException, JsonProcessingException {
         CreateConnection(); //get connection;
         String DealerID = I.getDealer().getDealerID(); //get DealerID
-        
+
         // convert format
         String filterList = FilterToString(I);
         String offer = OfferToString(I);
@@ -162,8 +162,11 @@ public class TableOperations {
             while(!rs.next()) {
                 Incentive i = new Incentive();
                 i.setIncentiveID(rs.getString("IncentiveID"));
-                i.setStartDate(rs.getDate("startDate"));
-                i.setEndDate(rs.getDate("endDate"));
+
+                java.util.Date utilStartDate = rs.getDate("startDate");
+                i.setStartDate(utilStartDate);
+                java.util.Date utilEndDate = rs.getDate("endDate");
+                i.setEndDate(utilEndDate);
                 i.setTitle(rs.getString("Title"));
                 i.setDisclaimer(rs.getString("Disclaimer"));
                 ObjectMapper mapper = new ObjectMapper();
