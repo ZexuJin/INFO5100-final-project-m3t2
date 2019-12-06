@@ -67,11 +67,11 @@ public class TableOperations {
         IncentiveID VARCHAR(225) primary key,
         startDate DATETIME,
         endDate DATETIME,
-        Title VARCHAR(225),
-        Disclaimer VARCHAR(225),
-        DealerID VARCHAR(225),
-        FilterList(Convert to String) VARCHAR(225),
-        Offer(Convert to String) VARCHAR(225)
+        Title VARCHAR(max),
+        Disclaimer VARCHAR(max),
+        DealerID VARCHAR(max),
+        FilterList(Convert to String) VARCHAR(max),
+        Offer(Convert to String) VARCHAR(max)
         )
 
         INSERT INTO [DealerID] (IncentiveID,startDate,endDate,Title,Disclaimer,DealerID,FilterList,Offer)
@@ -96,7 +96,7 @@ public class TableOperations {
 
         String sql = new StringBuilder().append("if not exists (select * from sysobjects where name='").append(DealerID).append("' and xtype='U')").
                 append("create table ").append(DealerID).append(" (").append("IncentiveID VARCHAR(225) primary key,").append("startDate DATETIME,").append("endDate DATETIME,").
-                append("Title VARCHAR(225),").append("Disclaimer VARCHAR(225),").append("DealerID VARCHAR(225),").append("FilterList VARCHAR(225),").append("Offer VARCHAR(225) )").append("INSERT INTO").append(DealerID).
+                append("Title VARCHAR(max),").append("Disclaimer VARCHAR(max),").append("DealerID VARCHAR(max),").append("FilterList VARCHAR(max),").append("Offer VARCHAR(max) )").append("INSERT INTO").append(DealerID).
                 append(" (IncentiveID,startDate,endDate,Title,Disclaimer,DealerID,FilterList,Offer) ").append("VALUES ('").
                 append(I.getIncentiveID()).append("','").append(startDate).append("','").append(endDate).append("','").append(I.getTitle()).append("','").append(I.getDisclaimer()).append("','").append(DealerID).
                 append("','").append(filterList).append("','").append(offer).append("')").toString();
