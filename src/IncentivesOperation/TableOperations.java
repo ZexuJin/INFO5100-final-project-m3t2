@@ -59,7 +59,7 @@ public class TableOperations {
 
 
 
-    //Create a new line.
+    //Create a new line in the table, if table doesn't exist, create table first.
     /*
 
     if not exists (select * from sysobjects where name='[DealerID]' and xtype='U')
