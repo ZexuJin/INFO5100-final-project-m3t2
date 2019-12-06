@@ -59,7 +59,7 @@ public class TableOperations {
 
 
 
-    //Create a new line in the table, if table doesn't exist, create table first.
+    //Create a new line in a table, if table doesn't exist, create table first.
     /*
 
     if not exists (select * from sysobjects where name='[DealerID]' and xtype='U')
@@ -105,16 +105,16 @@ public class TableOperations {
 
     //Edit a item
     /*
-        
+
         UPDATE [DealerID]
         SET startDate = '[I.getStartDate(convert to sql format)]',
-        SET endDate = '[I.getEndDate(convert to sql format)]',
-        SET Title = '[I.getTitle()]',
-        SET Disclaimer = '[I.getDisclaimer()]',
-        SET FilterList = '[I.getFilterList(Convert to String)]',
-        SET Offer = '[I.getOffer(Convert to String)]'
+        endDate = '[I.getEndDate(convert to sql format)]',
+        Title = '[I.getTitle()]',
+        Disclaimer = '[I.getDisclaimer()]',
+        FilterList = '[I.getFilterList(Convert to String)]',
+        Offer = '[I.getOffer(Convert to String)]'
         WHERE IncentiveID = [I.getIncentiveID()];
-        
+
     * */
 
     public void EditItem(Incentive I) throws SQLException, JsonProcessingException {
@@ -128,9 +128,9 @@ public class TableOperations {
         Date endDate = JavaEndDateToSqlDate(I);
 
         String sql = new StringBuilder().append("UPDATE ").append(DealerID).
-                append("SET startDate='"+startDate+"', SET endDate='"+ endDate
-                        +"', SET Title='"+I.getTitle()+"', SET Disclaimer='"+I.getDisclaimer()
-                        +"', SET FilterList='"+ filterList +"', SET FilterList='"+ offer +"'").
+                append("SET startDate='"+startDate+"', endDate='"+ endDate
+                        +"', Title='"+I.getTitle()+"', Disclaimer='"+I.getDisclaimer()
+                        +"', FilterList='"+ filterList +"', FilterList='"+ offer +"'").
                 append("WHERE IncentiveID="+I.getIncentiveID()).toString();
         Statement statement = connection.createStatement();
         statement.executeUpdate(sql);
@@ -139,9 +139,9 @@ public class TableOperations {
 
     //delete a item
     /*
-        
+
         DELETE FROM [DealerID] WHERE IncentiveID = [I.IncentiveID];
-        
+
     * */
     public static void DeleteItem(Incentive I) throws SQLException{
         CreateConnection();
@@ -155,7 +155,7 @@ public class TableOperations {
     // Get list of incentives by DealerID
     /*
         SELECT * FROM [DealerID]
-        
+
     * */
     public List<Incentive> getIncentiveByDealer(String DealerID) throws SQLException {
         List<Incentive> incentives = new ArrayList<>();
