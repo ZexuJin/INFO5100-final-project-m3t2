@@ -116,7 +116,7 @@ public class TableOperations {
         Disclaimer = '[I.getDisclaimer()]',
         FilterList = '[I.getFilterList(Convert to String)]',
         Offer = '[I.getOffer(Convert to String)]'
-        WHERE IncentiveID = [I.getIncentiveID()];
+        WHERE IncentiveID = '[I.getIncentiveID()]';
 
     * */
 
@@ -134,7 +134,7 @@ public class TableOperations {
                 append("SET startDate='"+startDate+"', endDate='"+ endDate
                         +"', Title='"+I.getTitle()+"', Disclaimer='"+I.getDisclaimer()
                         +"', FilterList='"+ filterList +"', FilterList='"+ offer +"'").
-                append("WHERE IncentiveID="+I.getIncentiveID()).toString();
+                append("WHERE IncentiveID='"+I.getIncentiveID()+"'").toString();
         Statement statement = connection.createStatement();
         statement.executeUpdate(sql);
         connection.close();
