@@ -4,11 +4,9 @@ import java.sql.*;
 import java.util.Date;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import m3.IncentiveManagement;
 import m3.mock.Dealer;
 import m3.model.filter.Filter;
 import m3.model.offer.Offer;
-import m3.model.Incentive;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -33,6 +31,32 @@ public class TableOperations {
             e.printStackTrace();
         }
     }
+
+
+    // util.date -> sql.date
+    public Date JavaStartDateToSqlDate(Incentive I) {
+        java.util.Date utilDate1 = new java.util.Date(I.getStartDate().getTime());
+        java.sql.Date sqlStartDate = new java.sql.Date(utilDate1.getTime());
+        return sqlStartDate;
+    }
+    public Date JavaEndDateToSqlDate(Incentive I) {
+        java.util.Date utilDate2 = new java.util.Date(I.getEndDate().getTime());
+        java.sql.Date sqlEndDate = new java.sql.Date(utilDate2.getTime());
+        return sqlEndDate;
+    }
+
+    //Filter/Offer to String
+    public String FilterToString(Incentive I) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        String filterList = mapper.writeValueAsString(I.getConditions()); //convert filter list to string
+        return filterList;
+    }
+    public String OfferToString(Incentive I) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        String Offer = mapper.writeValueAsString(I.getOffer()); //convert offer to string
+        return Offer;
+    }
+
 
 
     //Create a new line.
@@ -60,17 +84,18 @@ public class TableOperations {
      */
     public void Create(Incentive I) throws SQLException, JsonProcessingException {
         CreateConnection(); //get connection;
-
         String DealerID = I.getDealer().getDealerID(); //get DealerID
-        ObjectMapper mapper = new ObjectMapper();
-        String filterList = mapper.writeValueAsString(I.getConditions()); //convert filter list to string
-        String offer = mapper.writeValueAsString(I.getOffer()); //convert offer list to string
 
+        // convert format
+        String filterList = FilterToString(I);
+        String offer = OfferToString(I);
+        Date startDate = JavaStartDateToSqlDate(I);
+        Date endDate = JavaEndDateToSqlDate(I);
 
         String sql = new StringBuilder().append("if not exists (select * from sysobjects where name='").append(DealerID).append("' and xtype='U')").
                 append("create table ").append(DealerID).append(" (").append("IncentiveID VARCHAR(50) primary key,").append("startDate DATETIME,").append("endDate DATETIME,").
                 append("Title VARCHAR,").append("Disclaimer VARCHAR,").append("DealerID VARCHAR,").append("FilterList VARCHAR,").append("Offer VARCHAR )").append("INSERT INTO").append(DealerID).append("VALUES (").
-                append(I.getIncentiveID()).append(",").append(I.getStartDate()).append(",").append(I.getEndDate()).append(",").append(I.getTitle()).append(",").append(I.getDisclaimer()).append(",").append(DealerID).
+                append(I.getIncentiveID()).append(",").append(startDate).append(",").append(endDate).append(",").append(I.getTitle()).append(",").append(I.getDisclaimer()).append(",").append(DealerID).
                 append(",").append(filterList).append(",").append(offer).append(")").toString();
 
         Statement statement = connection.createStatement();
@@ -79,40 +104,69 @@ public class TableOperations {
     }
 
     //Edit a item
-    public static void EditItem(Incentive I) throws SQLException{
-        //TODO
-        CreateConnection();
-        String DealerID = I.getDealer().getDealerID();
-        String sql = new StringBuilder().append("UPDATE IncentiveManagementDB.").append(DealerID).append("SET startDate='"+I.getStartDate()+"', SET endDate='"+
-                I.getEndDate()+"', SET Title='"+I.getTitle()+"', SET Disclaimer='"+I.getDisclaimer()+"', SET DealerID='"+I.getDealerID()+"', SET offer='"+
-                I.getConditions()+"', SET condition='"+condition).append("WHERE IncentiveID="+IncentiveID).toString();
+    /*
+    * UPDATE [DealerID]
+    * SET startDate = '[I.getStartDate(convert to sql format)]',
+    * SET endDate = '[I.getEndDate(convert to sql format)]',
+    * SET Title = '[I.getTitle()]',
+    * SET Disclaimer = '[I.getDisclaimer()]',
+    * SET FilterList = '[I.getFilterList(Convert to String)]',
+    * SET Offer = '[I.getOffer(Convert to String)]'
+    * WHERE IncentiveID = [I.getIncentiveID()];
+    * */
+
+    public void EditItem(Incentive I) throws SQLException, JsonProcessingException {
+        CreateConnection(); //get connection;
+        String DealerID = I.getDealer().getDealerID(); //get DealerID
+
+        // convert format
+        String filterList = FilterToString(I);
+        String offer = OfferToString(I);
+        Date startDate = JavaStartDateToSqlDate(I);
+        Date endDate = JavaEndDateToSqlDate(I);
+
+        String sql = new StringBuilder().append("UPDATE ").append(DealerID).
+                append("SET startDate='"+startDate+"', SET endDate='"+ endDate
+                        +"', SET Title='"+I.getTitle()+"', SET Disclaimer='"+I.getDisclaimer()
+                        +"', SET FilterList='"+ filterList +"', SET FilterList='"+ offer +"'").
+                append("WHERE IncentiveID="+I.getIncentiveID()).toString();
         Statement statement = connection.createStatement();
         statement.executeUpdate(sql);
         connection.close();
     }
 
     //delete a item
-    public static void DeleteItem(String IncentiveID) throws SQLException{
-        //TODO
+    /*
+    * DELETE FROM [DealerID] WHERE IncentiveID = [I.IncentiveID];
+    * */
+    public static void DeleteItem(Incentive I) throws SQLException{
         CreateConnection();
-        String sql = new StringBuilder().append("DELETE FROM IncentivesOperation.Incentives ").append("WHERE IncentiveID = '"+IncentiveID+"';").toString();
+        String DealerID = I.getDealer().getDealerID();
+        String sql = new StringBuilder().append("DELETE FROM  ").append(DealerID).append(" WHERE IncentiveID = '"+I.getIncentiveID()+"';").toString();
         Statement statement = connection.createStatement();
         statement.executeUpdate(sql);
         connection.close();
     }
 
     // Get list of incentives by DealerID
-    public List<Incentive> getIncentiveByDealer(String DealerId) {
+    /*
+    * SELECT * FROM [DealerID]
+    * */
+    public List<Incentive> getIncentiveByDealer(String DealerID) throws SQLException {
         List<Incentive> incentives = new ArrayList<>();
-        conn = DBConnection.CreateConnection();
-        String sql = "SELECT * FROM " + DealerId;
+        CreateConnection();
+        String sql = "SELECT * FROM " + DealerID;
         try {
-            Statement st = conn.createStatement();
+            Statement st = connection.createStatement();
             ResultSet rs = st.executeQuery(sql);
             while(!rs.next()) {
                 Incentive i = new Incentive();
-                i.setStartDate(rs.getDate("startDate"));
-                i.setEndDate(rs.getDate("endDate"));
+                i.setIncentiveID(rs.getString("IncentiveID"));
+                
+                java.util.Date utilStartDate = rs.getDate("startDate");
+                i.setStartDate(utilStartDate);
+                java.util.Date utilEndDate = rs.getDate("endDate");
+                i.setEndDate(utilEndDate);
                 i.setTitle(rs.getString("Title"));
                 i.setDisclaimer(rs.getString("Disclaimer"));
                 ObjectMapper mapper = new ObjectMapper();
@@ -127,29 +181,9 @@ public class TableOperations {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        connection.close();
         return incentives;
     }
-    // util.date -> sql.date
-    public Date JavaStartDateToSqlDate(Incentive I) {
-        java.util.Date utilDate1 = new java.util.Date(I.getStartDate().getTime());
-        java.sql.Date sqlStartDate = new java.sql.Date(utilDate1.getTime());
-        return sqlStartDate;
-    }
-    public Date JavaEndDateToSqlDate(Incentive I) {
-        java.util.Date utilDate2 = new java.util.Date(I.getEndDate().getTime());
-        java.sql.Date sqlEndDate = new java.sql.Date(utilDate2.getTime());
-        return sqlEndDate;
-    }
-    // sql.date -> util.date
-    public Date SqlStartDateToUtilDate(String IncentiveID, List<Incentive> incentives) {
-        java.sql.Date sqlDate1 = "SELECT startDate FROM " + Incentives + "WHERE " +IncentiveID;
-        java.util.Date utilStartDate = sqlDate1;
-        return utilStartDate;
-    }
-    public Date SqlEndDateToUtilDate(String IncentiveID, List<Incentive> incentives) {
-        java.sql.Date sqlDate2 = "SELECT endDate FROM " + Incentives + "WHERE " +IncentiveID;
-        java.util.Date utilEndDate = sqlDate2;
-        return utilEndDate;
-    }
+
 }
 
