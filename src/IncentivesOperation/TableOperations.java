@@ -129,6 +129,27 @@ public class TableOperations {
         }
         return incentives;
     }
-
+    // util.date -> sql.date
+    public Date JavaStartDateToSqlDate(Incentive I) {
+        java.util.Date utilDate1 = new java.util.Date(I.getStartDate().getTime());
+        java.sql.Date sqlStartDate = new java.sql.Date(utilDate1.getTime());
+        return sqlStartDate;
+    }
+    public Date JavaEndDateToSqlDate(Incentive I) {
+        java.util.Date utilDate2 = new java.util.Date(I.getEndDate().getTime());
+        java.sql.Date sqlEndDate = new java.sql.Date(utilDate2.getTime());
+        return sqlEndDate;
+    }
+    // sql.date -> util.date
+    public Date SqlStartDateToUtilDate(String IncentiveID, List<Incentive> incentives) {
+        java.sql.Date sqlDate1 = "SELECT startDate FROM " + Incentives + "WHERE " +IncentiveID;
+        java.util.Date utilStartDate = sqlDate1;
+        return utilStartDate;
+    }
+    public Date SqlEndDateToUtilDate(String IncentiveID, List<Incentive> incentives) {
+        java.sql.Date sqlDate2 = "SELECT endDate FROM " + Incentives + "WHERE " +IncentiveID;
+        java.util.Date utilEndDate = sqlDate2;
+        return utilEndDate;
+    }
 }
 
