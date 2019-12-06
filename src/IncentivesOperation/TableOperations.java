@@ -105,14 +105,16 @@ public class TableOperations {
 
     //Edit a item
     /*
-    * UPDATE [DealerID]
-    * SET startDate = '[I.getStartDate(convert to sql format)]',
-    * SET endDate = '[I.getEndDate(convert to sql format)]',
-    * SET Title = '[I.getTitle()]',
-    * SET Disclaimer = '[I.getDisclaimer()]',
-    * SET FilterList = '[I.getFilterList(Convert to String)]',
-    * SET Offer = '[I.getOffer(Convert to String)]'
-    * WHERE IncentiveID = [I.getIncentiveID()];
+        
+        UPDATE [DealerID]
+        SET startDate = '[I.getStartDate(convert to sql format)]',
+        SET endDate = '[I.getEndDate(convert to sql format)]',
+        SET Title = '[I.getTitle()]',
+        SET Disclaimer = '[I.getDisclaimer()]',
+        SET FilterList = '[I.getFilterList(Convert to String)]',
+        SET Offer = '[I.getOffer(Convert to String)]'
+        WHERE IncentiveID = [I.getIncentiveID()];
+        
     * */
 
     public void EditItem(Incentive I) throws SQLException, JsonProcessingException {
@@ -137,7 +139,9 @@ public class TableOperations {
 
     //delete a item
     /*
-    * DELETE FROM [DealerID] WHERE IncentiveID = [I.IncentiveID];
+        
+        DELETE FROM [DealerID] WHERE IncentiveID = [I.IncentiveID];
+        
     * */
     public static void DeleteItem(Incentive I) throws SQLException{
         CreateConnection();
@@ -150,7 +154,8 @@ public class TableOperations {
 
     // Get list of incentives by DealerID
     /*
-    * SELECT * FROM [DealerID]
+        SELECT * FROM [DealerID]
+        
     * */
     public List<Incentive> getIncentiveByDealer(String DealerID) throws SQLException {
         List<Incentive> incentives = new ArrayList<>();
