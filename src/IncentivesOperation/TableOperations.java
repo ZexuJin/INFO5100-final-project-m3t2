@@ -64,17 +64,19 @@ public class TableOperations {
 
     if not exists (select * from sysobjects where name='[DealerID]' and xtype='U')
     create table [I.IncentiveID]] (
-        IncentiveID VARCHAR(50) primary key,
+        IncentiveID VARCHAR(225) primary key,
         startDate DATETIME,
         endDate DATETIME,
-        Title VARCHAR,
-        Disclaimer VARCHAR,
-        DealerID VARCHAR,
-        FilterList(Convert to String) VARCHAR,
-        Offer(Convert to String) VARCHAR
+        Title VARCHAR(225),
+        Disclaimer VARCHAR(225),
+        DealerID VARCHAR(225),
+        FilterList(Convert to String) VARCHAR(225),
+        Offer(Convert to String) VARCHAR(225)
         )
 
-        INSERT INTO [DealerID] VALUES (
+        INSERT INTO [DealerID] (IncentiveID,startDate,endDate,Title,Disclaimer,DealerID,FilterList,Offer)
+
+        VALUES (
             [I.getIncentiveID],[I.getStartDate],[I.getEndDate],
             [I.getTitle],[I.getDisclaimer],[DealerID],
             [I.getFilterList(Convert to String)],
@@ -93,10 +95,11 @@ public class TableOperations {
         Date endDate = JavaEndDateToSqlDate(I);
 
         String sql = new StringBuilder().append("if not exists (select * from sysobjects where name='").append(DealerID).append("' and xtype='U')").
-                append("create table ").append(DealerID).append(" (").append("IncentiveID VARCHAR(50) primary key,").append("startDate DATETIME,").append("endDate DATETIME,").
-                append("Title VARCHAR,").append("Disclaimer VARCHAR,").append("DealerID VARCHAR,").append("FilterList VARCHAR,").append("Offer VARCHAR )").append("INSERT INTO").append(DealerID).append("VALUES (").
-                append(I.getIncentiveID()).append(",").append(startDate).append(",").append(endDate).append(",").append(I.getTitle()).append(",").append(I.getDisclaimer()).append(",").append(DealerID).
-                append(",").append(filterList).append(",").append(offer).append(")").toString();
+                append("create table ").append(DealerID).append(" (").append("IncentiveID VARCHAR(225) primary key,").append("startDate DATETIME,").append("endDate DATETIME,").
+                append("Title VARCHAR(225),").append("Disclaimer VARCHAR(225),").append("DealerID VARCHAR(225),").append("FilterList VARCHAR(225),").append("Offer VARCHAR(225) )").append("INSERT INTO").append(DealerID).
+                append(" (IncentiveID,startDate,endDate,Title,Disclaimer,DealerID,FilterList,Offer) ").append("VALUES ('").
+                append(I.getIncentiveID()).append("','").append(startDate).append("','").append(endDate).append("','").append(I.getTitle()).append("','").append(I.getDisclaimer()).append("','").append(DealerID).
+                append("','").append(filterList).append("','").append(offer).append("')").toString();
 
         Statement statement = connection.createStatement();
         statement.executeUpdate(sql);
